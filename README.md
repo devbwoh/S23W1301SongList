@@ -4,3 +4,7 @@
 ## Week 13 01 SongList
 
 https://nano5.notion.site/Week13-01-Song-List-53472b09f76f46cd9d3805ec52e9b6bf?pvs=4
+
+## Week 13 02 AsyncImage
+
+https://nano5.notion.site/Week13-02-AsyncImage-556f54b34dbd43df8105331c518eaa43?pvs=4
