@@ -43,7 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
-import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -65,8 +64,13 @@ fun SongApp(songList: List<Song>) {
         startDestination = SongScreen.List.name,
     ) {
         composable(route = SongScreen.List.name) {
-            SongList(navController, songList)
+            SongList(songList) {
+                // it은 onNavigateToDetail()의 인자로 전달 되는 String
+                //     "Detail/$index"
+                navController.navigate(it)
+            }
         }
+
         composable(
             route = SongScreen.Detail.name + "/{index}",
             arguments = listOf(navArgument("index") {
@@ -81,24 +85,25 @@ fun SongApp(songList: List<Song>) {
 }
 
 @Composable
-fun SongList(navController: NavController, list: List<Song>) {
+fun SongList(list: List<Song>, onNavigateToDetail: (String) -> Unit) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
         items(list.size) {
-            SongItem(navController, list, it)
+            SongItem(it, list[it], onNavigateToDetail)
         }
     }
 }
 
 @Composable
-fun SongItem(navController: NavController,
-             songList: List<Song>,
-             index: Int) {
+fun SongItem(index: Int,
+             song: Song,
+             onNavigateToDetail: (String) -> Unit
+) {
     Card(
         modifier = Modifier.clickable {
-            navController.navigate(SongScreen.Detail.name + "/$index")
+            onNavigateToDetail(SongScreen.Detail.name + "/$index")
         },
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
@@ -109,7 +114,7 @@ fun SongItem(navController: NavController,
                 .padding(8.dp)
         ) {
             AsyncImage(
-                model = "https://picsum.photos/300/300?random=${songList[index].id}",
+                model = "https://picsum.photos/300/300?random=${song.id}",
                 contentDescription = "노래 앨범 이미지",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -122,8 +127,8 @@ fun SongItem(navController: NavController,
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceAround
             ) {
-                TextTitle(songList[index].title)
-                TextSinger(songList[index].singer)
+                TextTitle(song.title)
+                TextSinger(song.singer)
             }
         }
     }
@@ -192,7 +197,6 @@ fun SongDetail(song: Song) {
             )
         }
         Spacer(modifier = Modifier.height(32.dp))
-
         Button(onClick = {
             val intent = Intent(
                 Intent.ACTION_VIEW,
@@ -251,3 +255,4 @@ fun YoutubeIcon() {
         drawPath(color = Color.White, path = path)
     }
 }
+
